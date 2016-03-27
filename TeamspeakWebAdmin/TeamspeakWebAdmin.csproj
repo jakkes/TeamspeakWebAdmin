@@ -151,6 +151,7 @@
     <Content Include="Views\Home\Connect.cshtml" />
     <None Include="Properties\PublishProfiles\Binero.pubxml" />
     <None Include="Properties\PublishProfiles\TeamspeakWebAdmin %282%29.pubxml" />
+    <None Include="Properties\PublishProfiles\TeamspeakWebAdmin %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\TeamspeakWebAdmin.pubxml" />
     <None Include="Properties\PublishProfiles\tswebadmin.pubxml" />
     <None Include="Web.Debug.config">
