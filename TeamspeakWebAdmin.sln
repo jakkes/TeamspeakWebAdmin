@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamspeakWebAdmin", "TeamspeakWebAdmin\TeamspeakWebAdmin.csproj", "{0F2560F5-504D-416C-9D48-6E66580DD95C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamspeakWebAdmin.Tests", "TeamspeakWebAdmin.Tests\TeamspeakWebAdmin.Tests.csproj", "{E3FB271D-EA13-4521-BAD6-21CA9BC6831B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0F2560F5-504D-416C-9D48-6E66580DD95C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F2560F5-504D-416C-9D48-6E66580DD95C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F2560F5-504D-416C-9D48-6E66580DD95C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F2560F5-504D-416C-9D48-6E66580DD95C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3FB271D-EA13-4521-BAD6-21CA9BC6831B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3FB271D-EA13-4521-BAD6-21CA9BC6831B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3FB271D-EA13-4521-BAD6-21CA9BC6831B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3FB271D-EA13-4521-BAD6-21CA9BC6831B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

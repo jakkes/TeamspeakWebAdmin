@@ -1,0 +1,53 @@
+﻿@model TeamspeakWebAdmin.Models.ConnectModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <script src="~/Scripts/jquery-2.2.2.js"></script>
+    <script src="~/Scripts/bootstrap.js"></script>
+    <link href="~/Styles/bootstrap-theme.css" rel="stylesheet" />
+    <link href="~/Styles/bootstrap.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    <div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-12">
+        <div class="row">
+            <h3>Connect</h3>
+            <form method="post" action="@Url.Action("Connect")" class="form-horizontal">
+                <div class="input-group col-xs-12">
+                    <input type="text" class="form-control" id="IP" name="IP" placeholder="IP Address" value="@Model.IP" />
+                    <input type="text" class="form-control" id="Port" name="Port" placeholder="Port" value="@{if (Model.Error) { Write(Model.Port); } }" />
+                    <input type="text" class="form-control" id="Username" name="Username" placeholder="Username" value="@Model.Username" />
+                    <input type="password" class="form-control" id="Password" name="Password" placeholder="Password" value="@Model.Password" />
+                </div>
+                <div class="row">
+                    <div class="btn-group col-xs-12">
+                        <input type="submit" class="btn btn-success col-xs-6" value="Connect" />
+                        <button class="btn btn-info col-xs-6">Clear</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="row">
+            @{ if (Model.Error)
+                {
+                    if (string.IsNullOrEmpty(Model.ErrorMessage))
+                    {
+                        <div class="alert alert-danger" role="alert">Something went wrong...</div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger" role="alert">@Model.ErrorMessage</div>
+                    }
+                }
+            }
+        </div>
+    </div>
+    <script src="~/Scripts/Index/FormScript.js"></script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+﻿@model TeamspeakWebAdmin.Models.ConnectModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <script src="~/Scripts/jquery-2.2.2.js"></script>
+    <script src="~/Scripts/bootstrap.js"></script>
+    <link href="~/Styles/bootstrap.css" rel="stylesheet" />
+    <link href="~/Styles/bootstrap-theme.css" rel="stylesheet" />
+
+    <script type="text/javascript">
+        var guid = "@Model.Guid";
+    </script>
+
+    <meta name="viewport" content="width=device-width" />
+    <title>Connect</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="row">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4>Server list</h4>
+                        </div>
+                        <div class="list-group" id="ServerList">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="row">
+                    <div id="serverWindow" class="panel panel-primary panel-collapse collapse">
+                        <div class="panel-heading">
+                            <h4 id="ServerName">No server selected</h4>
+                        </div>
+                        <div class="panel-body">
+                            <ul class="media-list" id="ChannelList"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="row">
+                    <div name="userControlPanel" id="userControlPanel" class="panel panel-default panel-collapse collapse">
+                        <div class="panel-heading">
+                            <h4 id="ClientName">No user selected</h4>
+                        </div>
+                        <div class="panel-body">
+                            <p>
+                                <strong>Name: </strong><span style="float:right;" id="NameLabel"></span><br />
+                                <strong>Unique Id: </strong><span style="float:right;" id="UniqueIdLabel"></span><br />
+                                <strong>Version: </strong><span style="float:right;" id="VersionLabel"></span><br />
+                                <strong>IP: </strong><span style="float:right;" id="IPLabel"></span><br />
+                                <strong>Connections: </strong><span style="float:right;" id="ConnectionsLabel"></span><br />
+                                <strong>First connected: </strong><span style="float:right;" id="FirstConnectedLabel"></span><br />
+                                <strong>Last connected: </strong><span style="float:right;" id="LastConnectedLabel"></span><br />
+                                <strong>Idle time: </strong><span style="float:right;" id="IdleTimeLabel"></span><br />
+                                <strong>Server groups: </strong><span style="float:right;" id="ServerGroupsLabel"></span><br />
+                            </p>
+                        </div>
+                        <ul class="list-group">
+
+
+                            <button onclick="CollapseUserControls('pokePanel')" class="list-group-item">Poke client</button>
+                            <div id="pokePanel" class="panel-collapse collapse userControls">
+                                <div class="panel-body">
+                                    <div class="input-group">
+                                        <input type="text" placeholder="Message" id="pokeValue" class="form-control" />
+                                        <span class="input-group-btn">
+                                            <div onclick="Poke()" class="btn btn-primary">Poke</div>
+                                        </span>
+                                    </div>
+                                    <div id="pokeSuccess" class="alert alert-success collapse" style="margin-top:10px;" role="alert">Success</div>
+                                </div>
+                            </div>
+
+
+                            <button onclick="CollapseUserControls('kickPanel')" class="list-group-item">Kick client</button>
+                            <div id="kickPanel" class="panel-collapse collapse userControls">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <input type="text" placeholder="Message" id="kickValue" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <label class="radio-inline"><input type="radio" checked="checked" value="5" name="optradio">From server</label>
+                                            <label class="radio-inline"><input type="radio" value="4" name="optradio">From channel</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div onclick="Kick()" class="btn btn-danger col-xs-12">Kick</div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div id="kickSuccess" class="alert alert-success collapse" role="alert">Success</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <button onclick="CollapseUserControls('banPanel')" class="list-group-item">Ban client</button>
+                            <div id="banPanel" class="panel-collapse collapse userControls">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <input type="text" placeholder="Ban reason" id="banReason" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <label class="radio-inline"><input type="radio" checked="checked" value="-1" name="bantype">Permanent</label>
+                                            <label class="radio-inline"><input type="radio" value="0" name="bantype">Temporary</label>
+                                        </div>
+                                    </div>
+                                    <div class="input-group">
+                                        <input min="1" type="number" class="form-control" placeholder="Ban time (hours)" id="banTime" />
+                                        <span class="input-group-btn">
+                                            <div onclick="Ban()" class="btn btn-danger">Ban</div>
+                                        </span>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div id="banSuccess" class="alert alert-success collapse" role="alert">Success</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button onclick="CollapseUserControls('movePanel')" class="list-group-item">Move client</button>
+                            <div id="movePanel" class="panel-collapse collapse userControls">
+                                <div class="panel-body">
+                                    <div class="input-group">
+                                        <select class="form-control" id="moveToIndex"></select>
+                                        <span class="input-group-btn">
+                                            <div onclick="Move()" class="btn btn-primary">Move</div>
+                                        </span>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div id="moveSuccess" class="alert alert-success collapse" role="alert">Success</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div id="channelControlPanel" class="panel panel-default panel-collapse collapse">
+                        <div class="panel-heading">
+                            <h4 id="channelName">No channel selected</h4>
+                        </div>
+                        <ul class="list-group">
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/Scripts/Connect/ServerList.js"></script>
+
+</body>
+</html>
