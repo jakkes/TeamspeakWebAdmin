@@ -74,6 +74,24 @@ namespace TeamspeakWebAdmin.Core
         {
             Send("use sid=" + Id);
         }
+        
+        public ServerGroupModel[] ServerGroupList()
+        {
+            var r = Send("servergrouplist").Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+            var re = new ServerGroupModel[r.Length];
+            for (int i = 0; i < re.Length; i++)
+                re[i] = new ServerGroupModel(r[i]);
+            return re;
+        }
+
+        public ChannelGroupModel[] ChannelGroupList()
+        {
+            var r = Send("channelgrouplist").Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+            var re = new ChannelGroupModel[r.Length];
+            for (int i = 0; i < re.Length; i++)
+                re[i] = new ChannelGroupModel(r[i]);
+            return re;
+        }
 
         public DetailedClientModel ClientInfo(int id)
         {

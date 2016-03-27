@@ -127,10 +127,12 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\ChannelGroupModel.cs" />
     <Compile Include="Models\ChannelModel.cs" />
     <Compile Include="Models\ClientModel.cs" />
     <Compile Include="Models\ConnectModel.cs" />
     <Compile Include="Models\DetailedClientModel.cs" />
+    <Compile Include="Models\ServerGroupModel.cs" />
     <Compile Include="Models\ServerModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -148,6 +150,9 @@
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="Views\Home\Connect.cshtml" />
     <None Include="Properties\PublishProfiles\Binero.pubxml" />
+    <None Include="Properties\PublishProfiles\TeamspeakWebAdmin %282%29.pubxml" />
+    <None Include="Properties\PublishProfiles\TeamspeakWebAdmin.pubxml" />
+    <None Include="Properties\PublishProfiles\tswebadmin.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

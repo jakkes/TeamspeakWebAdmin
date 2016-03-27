@@ -26,7 +26,7 @@ namespace TeamspeakWebAdmin.Models
         public DetailedClientModel() { }
         public DetailedClientModel(string txt)
         {
-            var g = new Regex(@"cid=([0-9]+) client_idle_time=([0-9]+) client_unique_identifier=([^ ]+) client_nickname=([^ ]+) client_version=([^ ]+) client_platform=([^ ]+).*client_database_id=([0-9]+) client_channel_group_id=([0-9]+) client_servergroups=([0-9,]+) client_created=([0-9]+) client_lastconnected=([0-9]+) client_totalconnections=([0-9]+).*connection_client_ip=([^ ]+)").Match(txt).Groups;
+            var g = new Regex(@"cid=([0-9]+) client_idle_time=([0-9]+) client_unique_identifier=([^ ]+) client_nickname=([^ ]+) client_version=([^ ]+) client_platform=([^ ]+).*client_database_id=([0-9]+) client_channel_group_id=([0-9]+) client_servergroups=([0-9,]+) client_created=([0-9]+) client_lastconnected=([0-9]+) client_totalconnections=([0-9]+).*connection_client_ip=?([^ ]*)").Match(txt).Groups;
             ChannelId = int.Parse(g[1].Value); IdleTime = int.Parse(g[2].Value); UniqueId = g[3].Value;
             Name = g[4].Value.Replace("\\s"," "); Version = g[5].Value.Replace("\\s", " ");
             Platform = g[6].Value.Replace("\\s", " "); ClientDatabaseId = int.Parse(g[7].Value);

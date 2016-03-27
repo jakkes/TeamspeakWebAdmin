@@ -4,6 +4,8 @@ var SuccessWindowOpen = 2000;
 
 var ServerList;
 var ServerIndex;
+var ServerGroupList;
+var ChannelGroupList;
 var ChannelList;
 var ClientList;
 var ClientIndex;
@@ -11,6 +13,22 @@ var ClientIndex;
 var sending = false;
 
 var cl = document.getElementById("ChannelList");
+
+function ServerGroupNameFromId(id) {
+    for (var i = 0; i < ServerGroupList.length; i++) {
+        if (ServerGroupList[i].ServerGroupId == id)
+            return ServerGroupList[i].Name;
+    }
+    return id;
+}
+
+function ChannelGroupNameFromId(id) {
+    for (var i = 0; i < ChannelGroupList.length; i++) {
+        if (ChannelGroupList[i].ChannelGroupId == id)
+            return ChannelGroupList[i].Name;
+    }
+    return id;
+}
 
 function toDateTime(secs) {
     var t = new Date(1970, 0, 1);
@@ -73,7 +91,13 @@ function ChangeServerSelection(e) {
     DeselectUser();
     document.getElementById("ServerName").innerText = ServerList[ServerIndex].Name;
     Send("SelectServer", function (e) {
-        UpdateChannelList();
+        Send("ServerGroupList", function (e) {
+            ServerGroupList = e;
+            Send("ChannelGroupList", function (e) {
+                ChannelGroupList = e;
+                UpdateChannelList();
+            });
+        });
     }, { Id: ServerList[ServerIndex].Id });
 }
 
@@ -198,10 +222,12 @@ function SelectUser(e) {
         var temp = document.getElementById("ServerGroupsLabel");
         temp.innerHTML = "";
         for (var i = 0; i < e.ServerGroupIds.length; i++) {
-            temp.innerHTML += e.ServerGroupIds[i];
+            temp.innerHTML += ServerGroupNameFromId(e.ServerGroupIds[i]);
             if (i + 1 < e.ServerGroupIds.length)
                 temp.innerHTML += "<br/>";
         }
+
+        document.getElementById("ChannelGroupLabel").innerText = ChannelGroupNameFromId(e.ChannelGroupId);
 
 
 

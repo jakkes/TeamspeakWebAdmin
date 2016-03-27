@@ -21,6 +21,18 @@ namespace TeamspeakWebAdmin.Controllers
             catch(Exception e) { return Json(e.Message); }
         }
 
+        public JsonResult ServerGroupList(string Guid)
+        {
+            try { return Json(Connections.Get(Guid).ServerGroupList()); }
+            catch(Exception e) { return Json(e.Message); }
+        }
+
+        public JsonResult ChannelGroupList(string Guid)
+        {
+            try { return Json(Connections.Get(Guid).ChannelGroupList()); }
+            catch (Exception e) { return Json(e.Message); }
+        }
+
         public JsonResult ClientList(string Guid)
         {
             try { return Json(Connections.Get(Guid).ClientList()); }
