@@ -50,20 +50,13 @@ function Send(request, re, data) {
         if (data == undefined)
             data = {};
         data.Guid = guid
-        console.log("");
-        console.log("--------- Sending ---------");
-        console.log(request);
-        console.log(data);
         $.post("/A/" + request + "/", data, function (e) {
             sending = false;
-            console.log("--------- Receiving ---------");
-            console.log(request);
-            console.log(e);
-            console.log("");
             re(e);
         }).fail(function (e) {
             console.log("Error");
             console.log(e);
+            sending = false;
         });
     }
 }
@@ -119,11 +112,16 @@ function UpdateChannelList() {
     while (cl.firstChild != undefined)
         cl.removeChild(cl.firstChild);
 
+    $("#ChannelList").append($("<p></p>").text("Loading..."));
+
     Send("ChannelList", function (e) {
         ChannelList = e;
 
         Send("ClientList", function (d) {
             ClientList = d;
+
+            while (cl.firstChild != undefined)
+                cl.removeChild(cl.firstChild);
 
             for (var i = 0; i < ChannelList.length; i++) {
 
