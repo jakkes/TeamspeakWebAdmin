@@ -11,44 +11,65 @@ namespace TeamspeakWebAdmin.Controllers
     {
         public JsonResult ServerList(string Guid)
         {
-            try { return Json(Connections.Get(Guid).ServerList()); }
-            catch(Exception e) { return Json(e.Message); }
+            try
+            {
+                return Json(Connections.Get(Guid).ServerList());
+            }
+            catch (Exception e) { return Json(e.Message); }
         }
 
         public JsonResult SelectServer(string Guid, int Id)
         {
-            try { Connections.Get(Guid).SelectServer(Id); return Json("Success"); }
-            catch(Exception e) { return Json(e.Message); }
+            try
+            {
+                Connections.Get(Guid).SelectServer(Id); return Json("Success");
+            }
+            catch (Exception e) { return Json(e.Message); }
         }
 
         public JsonResult ServerGroupList(string Guid)
         {
-            try { return Json(Connections.Get(Guid).ServerGroupList()); }
-            catch(Exception e) { return Json(e.Message); }
+            try
+            {
+                return Json(Connections.Get(Guid).ServerGroupList());
+            }
+            catch (Exception e) { return Json(e.Message); }
         }
 
         public JsonResult ChannelGroupList(string Guid)
         {
-            try { return Json(Connections.Get(Guid).ChannelGroupList()); }
+            try
+            {
+                return Json(Connections.Get(Guid).ChannelGroupList());
+            }
             catch (Exception e) { return Json(e.Message); }
         }
 
         public JsonResult ClientList(string Guid)
         {
-            try { return Json(Connections.Get(Guid).ClientList()); }
-            catch(Exception e) { return Json(e.Message); }
+            try
+            {
+                return Json(Connections.Get(Guid).ClientList());
+            }
+            catch (Exception e) { return Json(e.Message); }
         }
 
         public JsonResult ChannelList(string Guid)
         {
-            try { return Json(Connections.Get(Guid).ChannelList()); }
-            catch(Exception e) { return Json(e.Message); }
+            try
+            {
+                return Json(Connections.Get(Guid).ChannelList());
+            }
+            catch (Exception e) { return Json(e.Message); }
         }
 
         public JsonResult ClientInfo(string Guid, int ClientId)
         {
-            try { return Json(Connections.Get(Guid).ClientInfo(ClientId)); }
-            catch(Exception e) { return Json(e.Message); }
+            try
+            {
+                return Json(Connections.Get(Guid).ClientInfo(ClientId));
+            }
+            catch (Exception e) { return Json(e.Message); }
         }
 
         public JsonResult Poke(string Guid, string Text, int ClientId)

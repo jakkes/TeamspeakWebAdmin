@@ -28,7 +28,7 @@
                 <div class="row">
                     <div class="btn-group col-xs-12">
                         <input type="submit" class="btn btn-success col-xs-6" value="Connect" />
-                        <button class="btn btn-info col-xs-6">Clear</button>
+                        <div id="clearBtn" class="btn btn-info col-xs-6">Clear</div>
                     </div>
                 </div>
             </form>
@@ -48,6 +48,13 @@
             }
         </div>
     </div>
-    <script src="~/Scripts/Index/FormScript.js"></script>
+    <script type="text/javascript">
+        $("#clearBtn").click(function () {
+            $("#IP").val("");
+            $("#Port").val("");
+            $("#Username").val("");
+            $("#Password").val("");
+        })
+    </script>
 </body>
 </html>

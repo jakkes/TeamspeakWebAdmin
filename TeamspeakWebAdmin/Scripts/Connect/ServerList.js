@@ -1,31 +1,34 @@
-﻿$.post("/A/ServerList/", { Guid: guid }, UpdateServerList);
-
-var SuccessWindowOpen = 2000;
+﻿var SuccessWindowOpen = 2000;
 
 var ServerList;
-var ServerIndex;
+var ServerIndex = -1;
 var ServerGroupList;
 var ChannelGroupList;
 var ChannelList;
+var ChannelIndex = -1;
 var ClientList;
-var ClientIndex;
+var ClientIndex = -1;
 
 var sending = false;
 
 var cl = document.getElementById("ChannelList");
 
 function ServerGroupNameFromId(id) {
-    for (var i = 0; i < ServerGroupList.length; i++) {
-        if (ServerGroupList[i].ServerGroupId == id)
-            return ServerGroupList[i].Name;
+    if (ServerGroupList != undefined) {
+        for (var i = 0; i < ServerGroupList.length; i++) {
+            if (ServerGroupList[i].ServerGroupId == id)
+                return ServerGroupList[i].Name;
+        }
     }
     return id;
 }
 
 function ChannelGroupNameFromId(id) {
-    for (var i = 0; i < ChannelGroupList.length; i++) {
-        if (ChannelGroupList[i].ChannelGroupId == id)
-            return ChannelGroupList[i].Name;
+    if (ChannelGroupList != undefined) {
+        for (var i = 0; i < ChannelGroupList.length; i++) {
+            if (ChannelGroupList[i].ChannelGroupId == id)
+                return ChannelGroupList[i].Name;
+        }
     }
     return id;
 }
@@ -47,8 +50,16 @@ function Send(request, re, data) {
         if (data == undefined)
             data = {};
         data.Guid = guid
+        console.log("");
+        console.log("--------- Sending ---------");
+        console.log(request);
+        console.log(data);
         $.post("/A/" + request + "/", data, function (e) {
             sending = false;
+            console.log("--------- Receiving ---------");
+            console.log(request);
+            console.log(e);
+            console.log("");
             re(e);
         }).fail(function (e) {
             console.log("Error");
@@ -102,6 +113,8 @@ function ChangeServerSelection(e) {
 }
 
 function UpdateChannelList() {
+
+    DeselectUser();
 
     while (cl.firstChild != undefined)
         cl.removeChild(cl.firstChild);
@@ -240,6 +253,11 @@ function DeselectUser() {
     $("#userControlPanel").collapse('hide');
 }
 
+function SelectChannel(e) {
+    ChannelIndex = e.srcElement.id.split("-")[1];
+    document.getElementById()
+}
+
 function ShowSuccessMessage(cmd) {
     $("#"+cmd+"Success").collapse('show');
     setTimeout(function () {
@@ -295,3 +313,5 @@ function Move() {
         UpdateChannelList();
     }, { ClientId: clid, ChannelId: cid });
 }
+
+$.post("/A/ServerList/", { Guid: guid }, UpdateServerList);

@@ -8,18 +8,19 @@ using System.Net.Sockets;
 using System.Text.RegularExpressions;
 using System.Threading;
 using TeamspeakWebAdmin.Models;
+using TeamspeakWebAdmin;
 
 namespace TeamspeakWebAdmin.Core
 {
     public class Connection
     {
-
         public string Guid { get; private set; }
         public IPAddress LocalEndPoint { get; private set; }
 
         private TcpClient client;
         private NetworkStream stream;
-        private int timeout = 1000;
+        private int timeout = 5000;
+        private bool reading = false;
 
         public Connection(IPAddress IP, int Port, IPAddress Local)
         {
@@ -29,8 +30,6 @@ namespace TeamspeakWebAdmin.Core
             client = new TcpClient();
             client.Connect(new IPEndPoint(IP, Port));
             stream = client.GetStream();
-
-            Read(timeout);
         }
 
         public void Login(string Username, string Password)
@@ -66,7 +65,9 @@ namespace TeamspeakWebAdmin.Core
             var r = Send("channellist").Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
             var re = new ChannelModel[r.Length];
             for (int i = 0; i < re.Length; i++)
+            {
                 re[i] = new ChannelModel(r[i]);
+            }
             return re;
         }
 
@@ -120,11 +121,31 @@ namespace TeamspeakWebAdmin.Core
 
         private string Send(string msg)
         {
+            if (reading)
+                throw new Exception("Slow down");
+            reading = true;
             if (!client.Connected)
                 throw new Exception("Connection expired");
+            Read();
+            Logger.Log("");
+            Logger.Log("- - - - - - - - - - - - Sending - - - - - - - - - - - - ");
+            Logger.Log(msg);
             var b = ASCIIEncoding.ASCII.GetBytes(msg + "\n\r");
             stream.Write(b, 0, b.Length);
-            return Read(timeout);
+            string re = "";
+            int w = 0;
+            while (!re.Contains("error"))
+            {
+                re += Read();
+                Thread.Sleep(50);
+                if (w > timeout)
+                    throw new Exception("Timeout");
+                w += 50;
+            }
+            Logger.Log("- - - - - - - - - - - - Reading - - - - - - - - - - - - ");
+            Logger.Log(re);
+            reading = false;
+            return re;
         }
 
         internal string Read()
@@ -138,36 +159,9 @@ namespace TeamspeakWebAdmin.Core
                 message += ASCIIEncoding.ASCII.GetString(buffer, 0, r);
             }
 
-            var temp = message.Split(new string[] { "\n\r" }, StringSplitOptions.RemoveEmptyEntries);
-            if (temp.Last().StartsWith("error"))
-            {
-                var e = CheckErrorLine(temp.Last());
-                if (e.Id != "0")
-                    throw new Exception(e.Message);
-
-                string res = string.Empty;
-                for (int i = 0; i < temp.Length - 1; i++)
-                    res += temp[i] + "\n\r";
-
-                return res;
-            }
-            else
-                return message;
+            return message;
         }
-
-        internal string Read(int timeout)
-        {
-            int w = 0;
-            while(w < timeout)
-            {
-                if (stream.DataAvailable)
-                    return Read();
-                Thread.Sleep(100);
-                w += timeout / 50;
-            }
-            throw new Exception("Timeout");
-        }
-
+        
         internal Error CheckErrorLine(string ErrorLine)
         {
             var r = new Regex(@"error\sid=([0-9]+)\smsg=([^ ]+)");
