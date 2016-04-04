@@ -71,6 +71,27 @@ namespace TeamspeakWebAdmin.Core
             return re;
         }
 
+        public void ChannelEdit(int id, string Name, string Topic, string Description)
+        {
+            string s = "channeledit cid="+id;
+            if (Name != null)
+                s += " channel_name=" + Name.Replace(" ", "\\s");
+            if (Topic != null)
+                s += " channel_topic=" + Topic.Replace(" ", "\\s");
+            if (Description != null)
+                s += " channel_description=" + Description.Replace(" ", "\\s");
+
+            if (s.Length == ("channeledit cid="+id).Length)
+                return;
+
+            Send(s);
+        }
+
+        public void ChannelSetPassword(int id, string password)
+        {
+            Send(string.Format("channeledit cid={0} channel_password={1}", id, password));
+        }
+
         public void SelectServer(int Id)
         {
             Send("use sid=" + Id);
@@ -99,6 +120,11 @@ namespace TeamspeakWebAdmin.Core
             return new DetailedClientModel(Send(string.Format("clientinfo clid={0}", id)));
         }
 
+        public DetailedChannelModel ChannelInfo(int id)
+        {
+            return new DetailedChannelModel(Send(string.Format("channelinfo cid={0}", id)));
+        }
+
         public void Poke(string text, int id)
         {
             Send(string.Format("clientpoke msg={0} clid={1}", text.Replace(" ", "\\s"), id));
@@ -122,14 +148,11 @@ namespace TeamspeakWebAdmin.Core
         private string Send(string msg)
         {
             if (reading)
-                throw new Exception("Slow down");
-            reading = true;
+                throw new Error(new ErrorEventArgs("", "Slow down"));
             if (!client.Connected)
-                throw new Exception("Connection expired");
+                throw new Error(new ErrorEventArgs("", "Connection expired"));
+            reading = true;
             Read();
-            Logger.Log("");
-            Logger.Log("- - - - - - - - - - - - Sending - - - - - - - - - - - - ");
-            Logger.Log(msg);
             var b = ASCIIEncoding.ASCII.GetBytes(msg + "\n\r");
             stream.Write(b, 0, b.Length);
             string re = "";
@@ -139,12 +162,14 @@ namespace TeamspeakWebAdmin.Core
                 re += Read();
                 Thread.Sleep(50);
                 if (w > timeout)
-                    throw new Exception("Timeout");
+                {
+                    reading = false;
+                    throw new Error(new ErrorEventArgs("", "Slow down"));
+                }
                 w += 50;
             }
-            Logger.Log("- - - - - - - - - - - - Reading - - - - - - - - - - - - ");
-            Logger.Log(re);
             reading = false;
+            CheckErrorLine(re);
             return re;
         }
 
@@ -162,24 +187,34 @@ namespace TeamspeakWebAdmin.Core
             return message;
         }
         
-        internal Error CheckErrorLine(string ErrorLine)
+        internal void CheckErrorLine(string ErrorLine)
         {
             var r = new Regex(@"error\sid=([0-9]+)\smsg=([^ ]+)");
             var p = r.Match(ErrorLine).Groups;
-            return new Error(p[1].Value, p[2].Value);
+            if (p[1].Value != "0")
+                throw new Error(new ErrorEventArgs(p[1].Value, p[2].Value));
         }
     }
 
-    public class Error
+    public class ErrorEventArgs
     {
         public string Id { get; set; }
         public string Message { get; set; }
 
-        public Error() { }
-        public Error(string Id, string Message)
+        public ErrorEventArgs() { }
+        public ErrorEventArgs(string Id, string Message)
         {
             this.Id = Id;
             this.Message = Message.Replace("\\s", " ");
+        }
+    }
+
+    public class Error : Exception
+    {
+        public ErrorEventArgs Args { get; set; }
+        public Error(ErrorEventArgs e) : base(e.Message)
+        {
+            Args = e;
         }
     }
 }

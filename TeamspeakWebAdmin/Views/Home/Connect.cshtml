@@ -29,6 +29,16 @@
                         <div class="panel-heading">
                             <h4>Server list</h4>
                         </div>
+                        <div id="ServerListFailPanel" class="panel-body panel-collapse collapse">
+                            <div class="alert alert-warning" role="alert">Access to the server list was denied. Use the form below to select a server.</div>
+                            <div class="input-group">
+                                <input type="text" id="ServerIdInput" class="form-control" placeholder="Server Id" />
+                                <span class="input-group-btn">
+                                    <div onclick="ServerFormClick()" class="btn btn-default">Select</div>
+                                </span>
+                            </div>
+                            <div class="alert alert-danger collapse" style="margin-top:10px;" id="ServerFormClickFail" role="alert"></div>
+                        </div>
                         <div class="list-group" id="ServerList">
 
                         </div>
@@ -162,10 +172,42 @@
                 <div class="row">
                     <div id="channelControlPanel" class="panel panel-default panel-collapse collapse">
                         <div class="panel-heading">
-                            <h4 id="channelName">No channel selected</h4>
+                            <h4 id="ChannelName">No channel selected</h4>
+                        </div>
+                        <div class="panel-body">
+                            <p>
+                                <strong>Name: </strong><span id="ChannelNameLabel" style="float:right;"></span><br />
+                                <strong>Password: </strong><span id="ChannelPasswordLabel" style="float:right;"></span><br />
+                                <strong>Topic: </strong><span id="ChannelTopicLabel" style="float:right;"></span><br />
+                                <strong>Description: </strong><span id="ChannelDescription" style="float:right;"></span><br />
+                            </p>
                         </div>
                         <ul class="list-group">
+                            <button onclick="CollapseChannelControls('ChannelNamePanel')" class="list-group-item">Name & Description</button>
+                            <div id="ChannelNamePanel" class="panel-collapse collapse channelControl">
+                                <div class="panel-body col-lg-12">
+                                    <label for="Channel Name">Name</label>
+                                    <input type="text" id="channelNameInput" class="form-control" />
+                                    <label for="Channel Topic">Topic</label>
+                                    <input type="text" id="channelTopicInput" class="form-control" />
+                                    <label for="Channel Description">Description</label>
+                                    <input type="text" id="channelDescriptionInput" class="form-control" />
+                                    <div class="btn btn-primary" onclick="ChannelUpdateName();" style="margin-top:10px;width:100%;">Save</div>
+                                    <div id="UpdateChannelNameError" class="alert alert-danger collapse" style="margin-top:10px;" role="alert"></div>
+                                </div>
+                            </div>
 
+                            <button onclick="CollapseChannelControls('ChannelPasswordPanel')" class="list-group-item">Change Password</button>
+                            <div id="ChannelPasswordPanel" class="panel-collapse collapse channelControl">
+                                <div class="panel-body col-lg-12">
+                                    <div class="input-group">
+                                        <input type="password" placeholder="Password" id="channelPasswordInput" class="form-control" />
+                                        <span class="input-group-btn"><div onclick="ChannelSetPassword();" class="btn btn-primary">Change</div></span>
+                                    </div>
+                                    <div id="UpdateChannelPasswordSuccess" class="alert alert-success collapse" style="margin-top:10px;" role="alert">Success</div>
+                                    <div id="UpdateChannelPasswordError" class="alert alert-danger collapse" style="margin-top:10px;" role="alert"></div>
+                                </div>
+                            </div>
                         </ul>
                     </div>
                 </div>

@@ -5,9 +5,13 @@ var ServerIndex = -1;
 var ServerGroupList;
 var ChannelGroupList;
 var ChannelList;
+var ChannelInfo;
 var ChannelIndex = -1;
 var ClientList;
 var ClientIndex = -1;
+var temp;
+
+var Codec = ["Speex Narrowband", "Speex Wideband", "Speex Ultrawideband", "CELT Mono"];
 
 var sending = false;
 
@@ -44,7 +48,12 @@ function CollapseUserControls(target) {
     $("#" + target).collapse('show');
 }
 
-function Send(request, re, data) {
+function CollapseChannelControls(target){
+    $(".channelControl").collapse('hide');
+    $("#" + target).collapse('show');
+}
+
+function Send(request, re, data, fail) {
     if (!sending) {
         sending = true;
         if (data == undefined)
@@ -52,43 +61,84 @@ function Send(request, re, data) {
         data.Guid = guid
         $.post("/A/" + request + "/", data, function (e) {
             sending = false;
-            re(e);
+            temp = e;
+            if (e.Id == e.Message) {
+                re(e);
+            } else {
+                console.log(e);
+                fail(e);
+            }
         }).fail(function (e) {
-            console.log("Error");
-            console.log(e);
             sending = false;
+            console.log(e);
+            fail(e);
         });
     }
 }
 
-function UpdateServerList(data) {
+function UpdateServerList() {
 
-    ServerList = data;
+    Send("ServerList", function (data) {
+        ServerList = data;
 
-    var list = $("#ServerList");
-    list.empty();
+        var list = $("#ServerList");
+        list.empty();
 
-    for (var i = 0; i < data.length; i++) {
-        var root = document.createElement("a");
-        root.className = "list-group-item";
-        root.setAttribute("href", "#");
-        root.id = i;
-        if(data[i].Status == "online")
-            root.innerHTML = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>';
-        else {
-            root.innerHTML = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>';
+        for (var i = 0; i < data.length; i++) {
+            var root = document.createElement("a");
+            root.className = "list-group-item";
+            root.setAttribute("href", "#");
+            root.id = i;
+            if (data[i].Status == "online")
+                root.innerHTML = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>';
+            else {
+                root.innerHTML = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>';
+            }
+
+            root.innerHTML += " " + data[i].Name + " " + data[i].Clients + "/" + data[i].MaxClients;
+
+            root.addEventListener("click", ChangeServerSelection);
+
+            list.append(root);
         }
+    }, null, function (e) {
+        $("#ServerListFailPanel").collapse();
+    });
+}
 
-        root.innerHTML += " " + data[i].Name + " " + data[i].Clients + "/" + data[i].MaxClients;
-
-        root.addEventListener("click", ChangeServerSelection);
-
-        list.append(root);
+function ServerFormClick(e) {
+    if (/^\d+$/.test($("#ServerIdInput").val())) {
+        Send("SelectServer", function (e) {
+            Send("ServerGroupList", function (e) {
+                ServerGroupList = e;
+                Send("ChannelGroupList", function (e) {
+                    ChannelGroupList = e;
+                    UpdateChannelList();
+                }, null, function (e) {
+                    $("#ServerFormClickFail").text(e.Message).collapse('show');
+                    setTimeout(function () {
+                        $("#ServerFormClickFail").collapse('hide');
+                    }, SuccessWindowOpen)
+                });
+            }, null, function (e) {
+                $("#ServerFormClickFail").text(e.Message).collapse('show');
+                setTimeout(function () {
+                    $("#ServerFormClickFail").collapse('hide');
+                }, SuccessWindowOpen)
+            });
+        }, { Id: $("#ServerIdInput").val() }, function (e) {
+            $("#ServerFormClickFail").text(e.Message).collapse('show');
+            setTimeout(function () {
+                $("#ServerFormClickFail").collapse('hide');
+            }, SuccessWindowOpen)
+        });
+    } else {
+        $("#ServerIdInput").val("");
     }
 }
 
 function ChangeServerSelection(e) {
-    var index = e.srcElement.id
+    var index = e.srcElement.id;
     if (index == ServerIndex)
         return;
     ServerIndex = index;
@@ -102,12 +152,15 @@ function ChangeServerSelection(e) {
                 UpdateChannelList();
             });
         });
-    }, { Id: ServerList[ServerIndex].Id });
+    }, { Id: ServerList[ServerIndex].Id }, function (e) {
+        console.log(e);
+    });
 }
 
 function UpdateChannelList() {
 
     DeselectUser();
+    DeselectChannel();
 
     while (cl.firstChild != undefined)
         cl.removeChild(cl.firstChild);
@@ -148,9 +201,10 @@ function CreateChannelTree(index) {
     mediaEl.appendChild(icon);
     
     var body = document.createElement("div");
-    body.id = "Channel-" + index;
     body.className = "media-body";
     var txt = document.createElement("h4");
+    txt.id = "Channel-" + index;
+    txt.onclick = SelectChannel;
     txt.innerText = ChannelList[index].Name;
     txt.className = "media-heading";
     body.appendChild(txt);
@@ -218,6 +272,7 @@ function CreateUser(index) {
 }
 
 function SelectUser(e) {
+    DeselectChannel();
     ClientIndex = e.srcElement.id.split("-")[1];
     document.getElementById("ClientName").innerText = ClientList[ClientIndex].Name;
     Send("ClientInfo", function (e) {
@@ -252,8 +307,26 @@ function DeselectUser() {
 }
 
 function SelectChannel(e) {
+    DeselectUser();
     ChannelIndex = e.srcElement.id.split("-")[1];
-    document.getElementById()
+    document.getElementById("ChannelName").innerText = ChannelList[ChannelIndex].Name;
+    Send("ChannelInfo", function (e) {
+        ChannelInfo = e;
+        $("#ChannelNameLabel").text(e.Name); $("#channelNameInput").val(e.Name);
+        if (e.FlagPassword == 1)
+            $("#ChannelPasswordLabel").text("True");
+        else
+            $("#ChannelPasswordLabel").text("False");
+        $("#ChannelTopicLabel").text(e.Topic); $("#channelTopicInput").val(e.Topic);
+        $("#ChannelDescription").text(e.Description); $("#channelDescriptionInput").val(e.Description);
+
+        $("#channelControlPanel").collapse('show');
+    }, { ChannelId: ChannelList[ChannelIndex].ChannelId });
+}
+
+function DeselectChannel() {
+    ChannelIndex = -1;
+    $("#channelControlPanel").collapse("hide");
 }
 
 function ShowSuccessMessage(cmd) {
@@ -312,4 +385,42 @@ function Move() {
     }, { ClientId: clid, ChannelId: cid });
 }
 
-$.post("/A/ServerList/", { Guid: guid }, UpdateServerList);
+function ChannelUpdateName() {
+    var data = { ChannelId: ChannelList[ChannelIndex].ChannelId };
+    if ($("#channelNameInput").val() != ChannelInfo.Name)
+        data.Name = $("#channelNameInput").val();
+    if ($("#channelTopicInput").val() != ChannelInfo.Topic)
+        data.Topic = $("#channelTopicInput").val();
+    if ($("#channelDescriptionInput").val != ChannelInfo.Description)
+        data.Description = $("#channelDescriptionInput").val();
+    if (Object.keys(data).length == 1)
+        return;
+
+    Send("ChannelEdit", function (e) {
+        UpdateChannelList();
+    }, data, function (e) {
+        $("#UpdateChannelNameError").text(e.Message);
+        $("#UpdateChannelNameError").collapse('show');
+        setTimeout(function () {
+            $("#UpdateChannelNameError").collapse('hide');
+        }, SuccessWindowOpen);
+    });
+}
+
+function ChannelSetPassword() {
+    Send("ChannelSetPassword", function (e) {
+        $("#channelPasswordInput").val("");
+        ShowSuccessMessage("UpdateChannelPassword");
+    }, {
+        Password: $("#channelPasswordInput").val(),
+        ChannelId: ChannelList[ChannelIndex].ChannelId
+    }, function (e) {
+        $("#UpdateChannelPasswordError").text(e.Message);
+        $("#UpdateChannelPasswordError").collapse('show');
+        setTimeout(function () {
+            $("#UpdateChannelPasswordError").collapse('hide');
+        }, SuccessWindowOpen);
+    });
+}
+
+UpdateServerList();

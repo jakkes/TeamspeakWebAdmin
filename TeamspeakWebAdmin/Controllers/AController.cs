@@ -15,6 +15,7 @@ namespace TeamspeakWebAdmin.Controllers
             {
                 return Json(Connections.Get(Guid).ServerList());
             }
+            catch (Error e) { return Json(e.Args); }
             catch (Exception e) { return Json(e.Message); }
         }
 
@@ -24,6 +25,7 @@ namespace TeamspeakWebAdmin.Controllers
             {
                 Connections.Get(Guid).SelectServer(Id); return Json("Success");
             }
+            catch (Error e) { return Json(e.Args); }
             catch (Exception e) { return Json(e.Message); }
         }
 
@@ -33,6 +35,7 @@ namespace TeamspeakWebAdmin.Controllers
             {
                 return Json(Connections.Get(Guid).ServerGroupList());
             }
+            catch (Error e) { return Json(e.Args); }
             catch (Exception e) { return Json(e.Message); }
         }
 
@@ -42,6 +45,7 @@ namespace TeamspeakWebAdmin.Controllers
             {
                 return Json(Connections.Get(Guid).ChannelGroupList());
             }
+            catch (Error e) { return Json(e.Args); }
             catch (Exception e) { return Json(e.Message); }
         }
 
@@ -51,6 +55,7 @@ namespace TeamspeakWebAdmin.Controllers
             {
                 return Json(Connections.Get(Guid).ClientList());
             }
+            catch (Error e) { return Json(e.Args); }
             catch (Exception e) { return Json(e.Message); }
         }
 
@@ -60,6 +65,7 @@ namespace TeamspeakWebAdmin.Controllers
             {
                 return Json(Connections.Get(Guid).ChannelList());
             }
+            catch (Error e) { return Json(e.Args); }
             catch (Exception e) { return Json(e.Message); }
         }
 
@@ -69,6 +75,17 @@ namespace TeamspeakWebAdmin.Controllers
             {
                 return Json(Connections.Get(Guid).ClientInfo(ClientId));
             }
+            catch (Error e) { return Json(e.Args); }
+            catch (Exception e) { return Json(e.Message); }
+        }
+
+        public JsonResult ChannelInfo(string Guid, int ChannelId)
+        {
+            try
+            {
+                return Json(Connections.Get(Guid).ChannelInfo(ChannelId));
+            }
+            catch (Error e) { return Json(e.Args); }
             catch (Exception e) { return Json(e.Message); }
         }
 
@@ -79,6 +96,7 @@ namespace TeamspeakWebAdmin.Controllers
                 Connections.Get(Guid).Poke(Text, ClientId);
                 return Json("Success");
             }
+            catch (Error e) { return Json(e.Args); }
             catch (Exception e) { return Json(e.Message); }
         }
 
@@ -88,7 +106,9 @@ namespace TeamspeakWebAdmin.Controllers
             {
                 Connections.Get(Guid).Kick(Text, ClientId, Reasonid);
                 return Json("Success");
-            } catch(Exception e) { return Json(e.Message); }
+            }
+            catch (Error e) { return Json(e.Args); }
+            catch (Exception e) { return Json(e.Message); }
         }
 
         public JsonResult Move(string Guid, int ClientId, int ChannelId)
@@ -97,7 +117,9 @@ namespace TeamspeakWebAdmin.Controllers
             {
                 Connections.Get(Guid).Move(ClientId, ChannelId);
                 return Json("Success");
-            } catch (Exception e) { return Json(e.Message); }
+            }
+            catch (Error e) { return Json(e.Args); }
+            catch (Exception e) { return Json(e.Message); }
         }
 
         public JsonResult Ban(string Guid, string Text, int ClientId, int Time)
@@ -106,7 +128,31 @@ namespace TeamspeakWebAdmin.Controllers
             {
                 Connections.Get(Guid).Ban(Text, ClientId, Time);
                 return Json("Success");
-            } catch(Exception e) { return Json(e.Message); }
+            }
+            catch (Error e) { return Json(e.Args); }
+            catch (Exception e) { return Json(e.Message); }
+        }
+
+        public JsonResult ChannelEdit(string Guid, int ChannelId, string Name, string Topic, string Description)
+        {
+            try
+            {
+                Connections.Get(Guid).ChannelEdit(ChannelId, Name, Topic, Description);
+                return Json("Success");
+            }
+            catch (Error e)
+            {
+                return Json(e.Args);
+            }
+        }
+
+        public JsonResult ChannelSetPassword(string Guid, int ChannelId, string Password)
+        {
+            try
+            {
+                Connections.Get(Guid).ChannelSetPassword(ChannelId, Password);
+                return Json("Success");
+            } catch(Error e) { return Json(e.Args); }
         }
     }
 }
